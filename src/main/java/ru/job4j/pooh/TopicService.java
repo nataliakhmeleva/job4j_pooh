@@ -1,6 +1,5 @@
 package ru.job4j.pooh;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -12,19 +11,19 @@ public class TopicService implements Service {
         String httpRequest = req.httpRequestType();
         String name = req.getSourceName();
         String param = req.getParam();
-        if ("POST".equals(httpRequest)) {
+        if (HttpMethod.POST.getRequest().equals(httpRequest)) {
             topics.get(name).forEach((key, value) -> value.add(param));
-            return new Resp("", "200");
+            return new Resp("", HttpStatus.OK_200.getState());
         }
-        if ("GET".equals(httpRequest)) {
+        if (HttpMethod.GET.getRequest().equals(httpRequest)) {
             if (topics.containsKey(name) && topics.get(name).containsKey(param)) {
                 var text = topics.get(name).getOrDefault(param, new ConcurrentLinkedQueue<>()).poll();
-                return new Resp(text, "200");
+                return new Resp(text, HttpStatus.OK_200.getState());
             } else {
                 topics.putIfAbsent(name, new ConcurrentHashMap<>());
                 topics.get(name).putIfAbsent(req.getParam(), new ConcurrentLinkedQueue<>());
             }
         }
-        return new Resp("", "204");
+        return new Resp("", HttpStatus.NO_CONTEXT_204.getState());
     }
 }

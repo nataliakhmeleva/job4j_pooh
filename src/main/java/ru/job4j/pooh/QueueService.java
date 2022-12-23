@@ -11,14 +11,14 @@ public class QueueService implements Service {
         String httpRequest = req.httpRequestType();
         String name = req.getSourceName();
         String param = req.getParam();
-        if ("POST".equals(httpRequest)) {
+        if (HttpMethod.POST.getRequest().equals(httpRequest)) {
             queue.putIfAbsent(name, new ConcurrentLinkedQueue<>());
             queue.get(name).add(param);
         }
-        if ("GET".equals(httpRequest)) {
+        if (HttpMethod.GET.getRequest().equals(httpRequest)) {
             var text = queue.getOrDefault(name, new ConcurrentLinkedQueue<>()).poll();
-            return new Resp(text, "200");
+            return new Resp(text, HttpStatus.OK_200.getState());
         }
-        return new Resp("", "204");
+        return new Resp("", HttpStatus.NO_CONTEXT_204.getState());
     }
 }
